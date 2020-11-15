@@ -7,8 +7,9 @@ const chalk = require('chalk');
 
 const userRoutes = require('./src/lib/routes/userRoutes');
 const commentRoutes = require('./src/lib/routes/commentRoutes');
+const dbImport = require('./dbImport');
 
-mongoose.connect('mongodb://127.0.0.1:27017/demodb');
+mongoose.connect('mongodb://mongo:27017/demodb');
 const db = mongoose.connection;
 
 const morganMiddleware = morgan(function (tokens, req, res) {
@@ -23,7 +24,7 @@ const morganMiddleware = morgan(function (tokens, req, res) {
     ].join(' ');
 });
 
-const port = 3000;
+const port = process.env.PORT || 8000;
 const app = express();
 app.use(morganMiddleware);
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,8 +40,9 @@ app.use('*', (req, res) => {
 
 db.on('error', console.error.bind(console, 'Connection Error:'));
 
-db.once('open', function () {
+db.once('open', async function () {
     console.log("Successfully connected to MongoDB!");
+    await dbImport();
     app.listen(port);
     console.log(`Listening on port ${port}!`);
 });
