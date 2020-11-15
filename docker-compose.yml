@@ -5,6 +5,8 @@ services:
     image: sherifelkelesh/freachly
     restart: always
     build: .
+    environment:
+      - PORT=8000
     ports:
       - "8000:8000"
     links:
